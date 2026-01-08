@@ -1,7 +1,7 @@
 import express from "express";
 import "#db";
 import {errorHandler} from "#middlerware";
-import cors from "cors";
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 8080;
