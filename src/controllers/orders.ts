@@ -28,11 +28,7 @@ export const createOrder: RequestHandler<{}, OrderDTO, OrderInputDTO> = async (r
   const order = new Order();
   order.userId = userId;
   order.set('products', products);
-  order.total = products.reduce((acc, item) => {
-    const product = dbProducts.find(p => p._id.toString() === item.productId.toString());
-    if (!product) throw new Error(`Product ${item.productId} not found`);
-    return acc + product.price * item.quantity;
-  }, 0);
+
   await order.save();
 
   const populatedOrder = await order.populate([
@@ -80,15 +76,12 @@ export const updateOrder: RequestHandler<{ id: string }, OrderDTO, OrderInputDTO
 
   order.userId = userId;
   order.set('products', products);
-  order.total = products.reduce((acc, item) => {
-    const product = dbProducts.find(p => p._id.toString() === item.productId.toString());
-    if (!product) throw new Error(`Product ${item.productId} not found`);
-    return acc + product.price * item.quantity;
-  }, 0);
+
+  await order.save();
 
   const populatedOrder = await order.populate([
     { path: 'userId', select: 'firstName lastName email' },
-    { path: 'productId', select: 'name description price' }
+    { path: 'products.productId', select: 'name description price' }
   ]);
   res.json(populatedOrder);
 };
