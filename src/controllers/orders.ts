@@ -1,8 +1,8 @@
 import { type RequestHandler } from 'express';
+import { Types } from 'mongoose';
 import { Order, Product, User } from '#models';
 import type { orderSchema, orderInputSchema } from '#schemas';
 import { z } from 'zod/v4';
-import type { Types } from 'mongoose';
 
 type OrderInputDTO = z.infer<typeof orderInputSchema>;
 type OrderDTO = z.infer<typeof orderSchema>;
@@ -16,6 +16,16 @@ export const createOrder: RequestHandler<{}, OrderDTO, OrderInputDTO> = async (r
   const { userId, products } = req.body;
 
   checkIntegrity(userId, products);
+
+  const productIds = products.map(p => p.productId);
+
+  const dbProducts = await Product.find({
+    _id: { $in: productIds }
+  }).select('price');
+
+  if (products.length !== dbProducts.length) {
+    throw new Error('One or more products do not exist');
+  }
 
   const order = new Order();
   order.userId = userId;
@@ -53,7 +63,18 @@ export const updateOrder: RequestHandler<{ id: string }, OrderDTO, OrderInputDTO
     params: { id }
   } = req;
 
+  const productIds = products.map(p => p.productId);
+
+  const dbProducts = await Product.find({
+    _id: { $in: productIds }
+  }).select('price');
+
+  if (products.length !== dbProducts.length) {
+    throw new Error('One or more products do not exist');
+  }
+
   const order = await Order.findById(id);
+  if (!order) throw new Error('Order not found', { cause: 404 });
   if (!order) throw new Error('Order not found', { cause: 404 });
 
   checkIntegrity(userId, products);
