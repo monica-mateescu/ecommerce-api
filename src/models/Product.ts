@@ -1,21 +1,27 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, type Document, Types } from "mongoose";
 
+export interface ProductDocument extends Document {
+  name: string;
+  description: string;
+  price: number;
+  categoryId: Types.ObjectId;
+}
 
-const productSchema = new Schema(
+const productSchema = new Schema<ProductDocument>(
   {
     name: {
       type: String,
-      require: [true, "Product name is required"],
+      required: [true, "Product name is required"],
       trim: true,
     },
-    desctiption: {
+    description: {
       type: String,
-      require: [true, "Description is required"],
+      required: [true, "Description is required"],
       trim: true,
     },
     price: {
       type: Number,
-      require: [true, "Price is required"],
+      required: [true, "Price is required"],
       min: 0,
     },
     categoryId: {
@@ -26,8 +32,15 @@ const productSchema = new Schema(
   },
   {
     timestamps: true,
+    toJSON: {
+      transform(doc, ret: any) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.__v;
+        return ret;
+      },
+    },
   }
 );
 
-const Product = model('Product', productSchema);
-export default Product;
+export const Product = model<ProductDocument>("Product", productSchema);

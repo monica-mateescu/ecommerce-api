@@ -4,12 +4,13 @@ const categorySchema = new Schema(
   {
     name: {
       type: String,
-      require: [true, 'Category name is required'],
+      required: [true, 'Category name is required'],
       trim: true
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    
   }
 );
 
