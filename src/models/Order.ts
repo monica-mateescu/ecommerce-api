@@ -53,25 +53,9 @@ orderSchema.pre('validate', async function () {
       throw new Error(`invalid order: no product with id ${productId} and stock greater or equal ${quantity} found`, {
         cause: 400
       });
-    sum + product.price * quantity;
+    sum = sum + product.price * quantity;
   }
   this.total = sum;
-
-  // const productIds = this.products.map(p => p.productId);
-
-  // const products = await Product.find({
-  //   _id: { $in: productIds }
-  // }).select('price');
-
-  // const priceMap = new Map(products.map(p => [p._id.toString(), p.price]));
-
-  // this.total = this.products.reduce((sum, item) => {
-  //   const price = priceMap.get(item.productId.toString());
-  //   if (!price) {
-  //     throw new Error(`Product not found: ${item.productId}`);
-  //   }
-  //   return sum + price * item.quantity;
-  // }, 0);
 });
 
 export default model('Order', orderSchema);
