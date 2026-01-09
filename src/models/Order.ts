@@ -1,5 +1,5 @@
-import { Schema, model } from 'mongoose';
-import { Product } from '#models';
+import { Schema, Types, model } from 'mongoose';
+import { Product, User } from '#models';
 
 const orderSchema = new Schema(
   {
@@ -42,21 +42,36 @@ const orderSchema = new Schema(
 );
 
 orderSchema.pre('validate', async function () {
-  const productIds = this.products.map(p => p.productId);
+  if (!(await User.findOne({ _id: this.userId, isActive: true }))) {
+    throw new Error(`invalid order: no active user found with id ${this.userId}`, { cause: 400 });
+  }
+  let sum = 0;
+  for (let i = 0; i < this.products.length; i++) {
+    const { productId, quantity } = this.products.at(i)!;
+    const product = await Product.findOne({ _id: productId, stock: { $gte: quantity } });
+    if (!product)
+      throw new Error(`invalid order: no product with id ${productId} and stock greater or equal ${quantity} found`, {
+        cause: 400
+      });
+    sum + product.price * quantity;
+  }
+  this.total = sum;
 
-  const products = await Product.find({
-    _id: { $in: productIds }
-  }).select('price');
+  // const productIds = this.products.map(p => p.productId);
 
-  const priceMap = new Map(products.map(p => [p._id.toString(), p.price]));
+  // const products = await Product.find({
+  //   _id: { $in: productIds }
+  // }).select('price');
 
-  this.total = this.products.reduce((sum, item) => {
-    const price = priceMap.get(item.productId.toString());
-    if (!price) {
-      throw new Error(`Product not found: ${item.productId}`);
-    }
-    return sum + price * item.quantity;
-  }, 0);
+  // const priceMap = new Map(products.map(p => [p._id.toString(), p.price]));
+
+  // this.total = this.products.reduce((sum, item) => {
+  //   const price = priceMap.get(item.productId.toString());
+  //   if (!price) {
+  //     throw new Error(`Product not found: ${item.productId}`);
+  //   }
+  //   return sum + price * item.quantity;
+  // }, 0);
 });
 
 export default model('Order', orderSchema);

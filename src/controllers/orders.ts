@@ -15,11 +15,11 @@ export const getOrders: RequestHandler<{}, OrderDTO[]> = async (req, res) => {
 export const createOrder: RequestHandler<{}, OrderDTO, OrderInputDTO> = async (req, res) => {
   const { userId, products } = req.body;
 
-  try {
-    await checkIntegrity(userId, products);
-  } catch (err) {
-    throw err;
-  }
+  // try {
+  //   await checkIntegrity(userId, products);
+  // } catch (err) {
+  //   throw err;
+  // }
 
   const order = new Order();
   order.userId = userId;
@@ -60,11 +60,11 @@ export const updateOrder: RequestHandler<{ id: string }, OrderDTO, OrderInputDTO
   const order = await Order.findById(id);
   if (!order) throw new Error('Order not found', { cause: 404 });
 
-  try {
-    await checkIntegrity(userId, products);
-  } catch (err) {
-    throw err;
-  }
+  // try {
+  //   await checkIntegrity(userId, products);
+  // } catch (err) {
+  //   throw err;
+  // }
 
   order.userId = userId;
   order.set('products', products);
@@ -87,17 +87,17 @@ export const deleteOrder: RequestHandler<{ id: string }> = async (req, res) => {
   res.json({ message: 'Order deleted' });
 };
 
-async function checkIntegrity(userId: Types.ObjectId, products: { productId: Types.ObjectId; quantity: number }[]) {
-  if (!(await User.findOne({ id: userId, isActive: true }))) {
-    throw new Error(`invalid order: no active user found with id ${userId}`, { cause: 400 });
-  }
-  products.forEach(async product => {
-    if (!(await Product.findOne({ id: product.productId, stock: { $gte: product.quantity } })))
-      throw new Error(
-        `invalid order: no with id ${product.productId} and stock greater or equal ${product.quantity} found`,
-        {
-          cause: 400
-        }
-      );
-  });
-}
+// async function checkIntegrity(userId: Types.ObjectId, products: { productId: Types.ObjectId; quantity: number }[]) {
+//   if (!(await User.findOne({ _id: userId, isActive: true }))) {
+//     throw new Error(`invalid order: no active user found with id ${userId}`, { cause: 400 });
+//   }
+//   products.forEach(async product => {
+//     if (!(await Product.findOne({ _id: product.productId, stock: { $gte: product.quantity } })))
+//       throw new Error(
+//         `invalid order: no product with id ${product.productId} and stock greater or equal ${product.quantity} found`,
+//         {
+//           cause: 400
+//         }
+//       );
+//   });
+// }
