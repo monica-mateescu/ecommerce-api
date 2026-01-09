@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Product } from "../models/Product";
+import { Product } from "#models";
 
 /**
  * Get all products, optional filter by categoryId

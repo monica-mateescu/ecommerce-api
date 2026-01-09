@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from "express";
-import { Category } from "../models/Category";
+import { Category } from "#models";
 
 /**
  * Get all categories
