@@ -1,27 +1,21 @@
-import { Schema, model, type Document } from "mongoose";
-
-/**
- * Category document interface
- */
-export interface CategoryDocument extends Document {
-  name: string;
-}
+import { Schema, model } from "mongoose";
 
 /**
  * Category schema definition
  */
-const categorySchema = new Schema<CategoryDocument>(
+const categorySchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, 'Category name is required'],
-      trim: true
-    }
+      required: [true, "Category name is required"],
+      unique: true,
+      trim: true,
+    },
   },
   {
     timestamps: true,
     toJSON: {
-      transform(doc, ret:any) {
+      transform(doc, ret: any) {
         // Replace _id with id
         ret.id = ret._id;
         delete ret._id;
@@ -38,4 +32,5 @@ const categorySchema = new Schema<CategoryDocument>(
 /**
  * Category model
  */
-export const Category = model<CategoryDocument>("Category", categorySchema);
+export const Category = model("Category", categorySchema);
+export default Category;

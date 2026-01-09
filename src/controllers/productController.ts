@@ -80,3 +80,4 @@ export const deleteProduct: RequestHandler<{ id: string }>  = async (req, res) =
     if (!deletedProduct) throw new Error("Product not found", { cause: 404 })
     res.status(204).send();
 };
+

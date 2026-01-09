@@ -4,7 +4,7 @@ import {
   getProductById,
   createProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
 } from "#controllers";
 import { validateBodyZod } from "#middleware";
 import { productInputSchema } from "#schemas";

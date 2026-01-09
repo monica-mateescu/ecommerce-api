@@ -5,24 +5,28 @@ const productSchema = new Schema(
   {
     name: {
       type: String,
-      required: [true, "Product name is required"],
-      trim: true,
+      required: [true, 'Product name is required'],
+      trim: true
     },
     description: {
       type: String,
-      required: [true, "Description is required"],
-      trim: true,
+      required: [true, 'Description is required'],
+      trim: true
     },
     price: {
       type: Number,
-      required: [true, "Price is required"],
-      min: 0,
+      required: [true, 'Price is required'],
+      min: 0
+    },
+    stock: {
+      type: Number,
+      required: [true, 'Stock is required']
     },
     categoryId: {
       type: Schema.Types.ObjectId,
-      ref: "Category",
-      required: [true, "CategoryId is required"],
-    },
+      ref: 'Category',
+      required: [true, 'CategoryId is required']
+    }
   },
   {
     timestamps: true,
@@ -32,8 +36,8 @@ const productSchema = new Schema(
         delete ret._id;
         delete ret.__v;
         return ret;
-      },
-    },
+      }
+    }
   }
 );
 

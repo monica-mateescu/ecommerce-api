@@ -3,14 +3,6 @@ import { User } from "#models";
 import type { userInputSchema, userSchema } from "#schemas";
 import { z } from "zod/v4";
 
-export type UserType = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  isActive?: boolean;
-};
-
 type UserInputDTO = z.infer<typeof userInputSchema>;
 type UserDTO = z.infer<typeof userSchema>;
 
