@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import { Product } from "#models";
+import { Category } from "#models";
 
 /**
  * Get all products, optional filter by categoryId
@@ -33,6 +34,12 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
  */
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const {categoryId}=req.body;
+
+    //check
+    const category = await Category.findById(categoryId);
+    if(!category) return res.status(400).json({message: 'Invalid categoryId: Category does not exist'})
+
     const newProduct = await Product.create(req.body);
     res.status(201).json(newProduct);
   } catch (err) {
@@ -45,6 +52,14 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
  */
 export const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const {categoryId} = req.body;
+
+    //check
+    if(categoryId){
+      const category = await Category.findById(categoryId);
+      if(!category) return res.status(400).json({message: 'Invalid categoryId: Category does not exist'})
+    }
+
     const updatedProduct = await Product.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedProduct) return res.status(404).json({ message: "Product not found" });
     res.json(updatedProduct);
