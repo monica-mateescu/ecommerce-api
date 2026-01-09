@@ -4,15 +4,21 @@ import {
   getCategoryById,
   createCategory,
   updateCategory,
-  deleteCategory
+  deleteCategory,
 } from "#controllers";
+import { categoryInputSchema } from "#schemas";
+import { validateBodyZod } from "#middleware";
 
 const categoryRouter = Router();
 
 categoryRouter.get("/", getCategories);
 categoryRouter.get("/:id", getCategoryById);
-categoryRouter.post("/", createCategory);
-categoryRouter.put("/:id", updateCategory);
+categoryRouter.post("/", validateBodyZod(categoryInputSchema), createCategory);
+categoryRouter.put(
+  "/:id",
+  validateBodyZod(categoryInputSchema),
+  updateCategory
+);
 categoryRouter.delete("/:id", deleteCategory);
 
 export default categoryRouter;
