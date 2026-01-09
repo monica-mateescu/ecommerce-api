@@ -2,7 +2,7 @@ import express from "express";
 import "#db";
 import { errorHandler } from "#middleware";
 import cors from "cors";
-import { categoryRouter, userRouter } from "#routers";
+import { categoryRouter, userRouter, orderRouter } from "#routers";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -15,6 +15,7 @@ app.get("/", (req, res) => res.send("eCommerce API is running!"));
 
 app.use("/users", userRouter);
 app.use("/categories", categoryRouter);
+app.use("/orders", orderRouter);
 
 app.use("*splat", (req, res) => {
   throw new Error("Not found", { cause: 404 });
