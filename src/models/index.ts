@@ -1,4 +1,4 @@
 export { default as User } from "./User.ts";
 
-export * from "./Product";
-export * from "./Category";
+export * from "./Product.ts";
+export * from "./Category.ts";
