@@ -6,13 +6,15 @@ import {
   updateProduct,
   deleteProduct,
 } from "#controllers";
+import { validateBodyZod } from "#middleware";
+import { productInputSchema } from "#schemas";
 
 const productRouter = Router();
 
 productRouter.get("/", getProducts);
 productRouter.get("/:id", getProductById);
-productRouter.post("/", createProduct);
-productRouter.put("/:id", updateProduct);
+productRouter.post("/", validateBodyZod(productInputSchema), createProduct);
+productRouter.put("/:id", validateBodyZod(productInputSchema), updateProduct);
 productRouter.delete("/:id", deleteProduct);
 
 export default productRouter;
