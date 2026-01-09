@@ -1,6 +1,16 @@
-import { Schema, model } from 'mongoose';
+import { Schema, model, type Document } from "mongoose";
 
-const categorySchema = new Schema(
+/**
+ * Category document interface
+ */
+export interface CategoryDocument extends Document {
+  name: string;
+}
+
+/**
+ * Category schema definition
+ */
+const categorySchema = new Schema<CategoryDocument>(
   {
     name: {
       type: String,
@@ -10,9 +20,22 @@ const categorySchema = new Schema(
   },
   {
     timestamps: true,
-    
+    toJSON: {
+      transform(doc, ret:any) {
+        // Replace _id with id
+        ret.id = ret._id;
+        delete ret._id;
+
+        // Remove version key
+        delete ret.__v;
+
+        return ret;
+      },
+    },
   }
 );
 
-const Category = model('Category', categorySchema);
-export default Category;
+/**
+ * Category model
+ */
+export const Category = model<CategoryDocument>("Category", categorySchema);
