@@ -1,65 +1,72 @@
-import type { Request, Response, NextFunction } from "express";
+import type { Request, Response, NextFunction, RequestHandler } from "express";
 import { Category } from "#models";
+import type z from "zod/v4";
+import type { categoryInputSchema, categorySchema } from "#schemas";
+
+type CategoryInputDTO = z.infer<typeof categoryInputSchema>;
+type CategoryDTO = z.infer<typeof categorySchema>;
 
 /**
  * Get all categories
  */
-export const getCategories = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const categories = await Category.find();
-    res.json(categories);
-  } catch (err) {
-    next(err);
-  }
+export const getCategories: RequestHandler<{}, CategoryDTO[]> = async (
+  req,
+  res
+) => {
+  const categories = await Category.find();
+  res.json(categories);
 };
 
 /**
  * Get category by ID
  */
-export const getCategoryById = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const category = await Category.findById(req.params.id);
-    if (!category) return res.status(404).json({ message: "Category not found" });
-    res.json(category);
-  } catch (err) {
-    next(err);
-  }
+export const getCategoryById: RequestHandler<
+  { id: string },
+  CategoryDTO
+> = async (req, res) => {
+  const category = await Category.findById(req.params.id);
+  if (!category) throw new Error("Category not found", { cause: 404 });
+  res.json(category);
 };
 
 /**
  * Create a new category
  */
-export const createCategory = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const newCategory = await Category.create(req.body);
-    res.status(201).json(newCategory);
-  } catch (err) {
-    next(err);
-  }
+export const createCategory: RequestHandler<
+  {},
+  CategoryDTO,
+  CategoryInputDTO
+> = async (req, res) => {
+  const newCategory = await Category.create(req.body);
+  res.status(201).json(newCategory);
 };
 
 /**
  * Update category
  */
-export const updateCategory = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const updatedCategory = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!updatedCategory) return res.status(404).json({ message: "Category not found" });
-    res.json(updatedCategory);
-  } catch (err) {
-    next(err);
-  }
+export const updateCategory: RequestHandler<
+  { id: string },
+  CategoryDTO,
+  CategoryInputDTO
+> = async (req, res) => {
+  const updatedCategory = await Category.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  if (!updatedCategory) throw new Error("Category not found", { cause: 404 });
+  res.json(updatedCategory);
 };
 
 /**
  * Delete category
  */
-export const deleteCategory = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const deletedCategory = await Category.findByIdAndDelete(req.params.id);
-    if (!deletedCategory) return res.status(404).json({ message: "Category not found" });
-    res.status(204).send();
-  } catch (err) {
-    next(err);
-  }
+export const deleteCategory: RequestHandler<{ id: string }> = async (
+  req,
+  res
+) => {
+  const deletedCategory = await Category.findByIdAndDelete(req.params.id);
+  if (!deletedCategory)
+    if (!deletedCategory) throw new Error("Category not found", { cause: 404 });
+  res.status(204).send();
 };
