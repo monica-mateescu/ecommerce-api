@@ -7,14 +7,14 @@ import {
   deleteProduct
 } from "#controllers";
 import { validateBodyZod } from "#middleware";
-import { productSchema } from "#schemas";
+import { productInputSchema } from "#schemas";
 
 const productRouter = Router();
 
 productRouter.get("/", getProducts);
 productRouter.get("/:id", getProductById);
-productRouter.post("/", validateBodyZod(productSchema), createProduct);
-productRouter.put("/:id", validateBodyZod(productSchema), updateProduct);
+productRouter.post("/", validateBodyZod(productInputSchema), createProduct);
+productRouter.put("/:id", validateBodyZod(productInputSchema), updateProduct);
 productRouter.delete("/:id", deleteProduct);
 
 export default productRouter;
