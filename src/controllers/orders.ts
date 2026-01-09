@@ -1,7 +1,8 @@
-import { type RequestHandler } from "express";
-import { Order } from "#models";
-import type { orderSchema, orderInputSchema } from "#schemas";
-import { z } from "zod/v4";
+import { type RequestHandler } from 'express';
+import { Types } from 'mongoose';
+import { Order, Product } from '#models';
+import type { orderSchema, orderInputSchema } from '#schemas';
+import { z } from 'zod/v4';
 
 type OrderInputDTO = z.infer<typeof orderInputSchema>;
 type OrderDTO = z.infer<typeof orderSchema>;
@@ -11,75 +12,92 @@ export const getOrders: RequestHandler<{}, OrderDTO[]> = async (req, res) => {
   res.json(orders);
 };
 
-export const createOrder: RequestHandler<{}, OrderDTO, OrderInputDTO> = async (
-  req,
-  res
-) => {
+export const createOrder: RequestHandler<{}, OrderDTO, OrderInputDTO> = async (req, res) => {
   const { userId, products } = req.body;
+
+  const productIds = products.map(p => p.productId);
+
+  const dbProducts = await Product.find({
+    _id: { $in: productIds }
+  }).select('price');
+
+  if (products.length !== dbProducts.length) {
+    throw new Error('One or more products do not exist');
+  }
 
   const order = new Order();
   order.userId = userId;
-  order.set("products", products);
-  order.total = 0;
+  order.set('products', products);
+  order.total = products.reduce((acc, item) => {
+    const product = dbProducts.find(p => p._id.toString() === item.productId.toString());
+    if (!product) throw new Error(`Product ${item.productId} not found`);
+    return acc + product.price * item.quantity;
+  }, 0);
   await order.save();
 
   const populatedOrder = await order.populate([
-    { path: "userId", select: "firstName lastName email" },
-    { path: "products.productId", select: "name description price" },
+    { path: 'userId', select: 'firstName lastName email' },
+    { path: 'products.productId', select: 'name description price' }
   ]);
   res.json(populatedOrder);
 };
 
-export const getOrderById: RequestHandler<{ id: string }, OrderDTO> = async (
-  req,
-  res
-) => {
+export const getOrderById: RequestHandler<{ id: string }, OrderDTO> = async (req, res) => {
   const {
-    params: { id },
+    params: { id }
   } = req;
 
   const order = await Order.findById(id).populate([
-    { path: "userId", select: "firstName lastName email" },
-    { path: "products.productId", select: "name description price" },
+    { path: 'userId', select: 'firstName lastName email' },
+    { path: 'products.productId', select: 'name description price' }
   ]);
 
   if (!order) {
-    throw new Error("Order not found", { cause: 404 });
+    throw new Error('Order not found', { cause: 404 });
   }
 
   res.json(order);
 };
 
-export const updateOrder: RequestHandler<
-  { id: string },
-  OrderDTO,
-  OrderInputDTO
-> = async (req, res) => {
+export const updateOrder: RequestHandler<{ id: string }, OrderDTO, OrderInputDTO> = async (req, res) => {
   const {
     body: { userId, products },
-    params: { id },
+    params: { id }
   } = req;
 
+  const productIds = products.map(p => p.productId);
+
+  const dbProducts = await Product.find({
+    _id: { $in: productIds }
+  }).select('price');
+
+  if (products.length !== dbProducts.length) {
+    throw new Error('One or more products do not exist');
+  }
+
   const order = await Order.findById(id);
-  if (!order) throw new Error("Order not found", { cause: 404 });
+  if (!order) throw new Error('Order not found', { cause: 404 });
 
   order.userId = userId;
-  order.set("products", products);
-  order.total = 0;
-  await order.save();
+  order.set('products', products);
+  order.total = products.reduce((acc, item) => {
+    const product = dbProducts.find(p => p._id.toString() === item.productId.toString());
+    if (!product) throw new Error(`Product ${item.productId} not found`);
+    return acc + product.price * item.quantity;
+  }, 0);
 
   const populatedOrder = await order.populate([
-    { path: "userId", select: "firstName lastName email" },
-    { path: "productId", select: "name description price" },
+    { path: 'userId', select: 'firstName lastName email' },
+    { path: 'productId', select: 'name description price' }
   ]);
   res.json(populatedOrder);
 };
 
 export const deleteOrder: RequestHandler<{ id: string }> = async (req, res) => {
   const {
-    params: { id },
+    params: { id }
   } = req;
   const order = await Order.findByIdAndDelete(id);
-  if (!order) throw new Error("Order not found", { cause: 404 });
-  res.json({ message: "Order deleted" });
+  if (!order) throw new Error('Order not found', { cause: 404 });
+  res.json({ message: 'Order deleted' });
 };
