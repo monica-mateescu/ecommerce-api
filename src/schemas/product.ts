@@ -6,6 +6,7 @@ export const productInputSchema = z.strictObject({
   name: z.string({ error: "ProductName must be a string" }).min(1, { message: "Product name is required" }),
   description: z.string({ error: "Description must be a string" }).min(1, { message: "Description is required" }),
   price: z.number({ error: "Price must be a number" }).min(0, { message: "Price must be a positive number" }),
+  stock: z.number({ error: "Stock must be a number" }).min(0, { message: "Stock must be >= 0" }),
   categoryId: z
     .string()
     .refine((id) => Types.ObjectId.isValid(id), {
