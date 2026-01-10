@@ -72,5 +72,5 @@ export const deleteOrder: RequestHandler<{ id: string }> = async (req, res) => {
   } = req;
   const order = await Order.findByIdAndDelete(id);
   if (!order) throw new Error('Order not found', { cause: 404 });
-  res.json({ message: 'Order deleted' });
+  res.status(204).send();
 };

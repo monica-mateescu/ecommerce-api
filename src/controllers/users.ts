@@ -60,5 +60,5 @@ export const deleteUser: RequestHandler<{ id: string }> = async (req, res) => {
   } = req;
   const user = await User.findByIdAndDelete(id);
   if (!user) throw new Error("User not found", { cause: 404 });
-  res.json({ message: "User deleted" });
+  res.status(204).send();
 };
