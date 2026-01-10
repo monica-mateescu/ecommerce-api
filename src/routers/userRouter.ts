@@ -6,15 +6,15 @@ import {
   updateUser,
   deleteUser,
 } from "#controllers";
-import { validateBodyZod } from "#middleware";
+import { validateBodyZod, validateObjectIdParam } from "#middleware";
 import { userInputSchema } from "#schemas";
 
 const userRouter = Router();
 
 userRouter.get("/", getUsers);
 userRouter.post("/", validateBodyZod(userInputSchema), createUser);
-userRouter.get("/:id", getUserById);
-userRouter.put("/:id", validateBodyZod(userInputSchema), updateUser);
-userRouter.delete("/:id", deleteUser);
+userRouter.get("/:id", validateObjectIdParam('id'), getUserById);
+userRouter.put("/:id", validateObjectIdParam('id'), validateBodyZod(userInputSchema), updateUser);
+userRouter.delete("/:id", validateObjectIdParam('id'), deleteUser);
 
 export default userRouter;
