@@ -19,7 +19,8 @@ const orderSchema = new Schema(
           type: Number,
           required: [true, 'Quantity is required'],
           min: [1, 'Quantity must be at least 1']
-        }
+        },
+        _id: false
       }
     ],
     total: {
