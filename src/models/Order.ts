@@ -56,7 +56,7 @@ orderSchema.pre('validate', async function () {
       });
     sum = sum + product.price * quantity;
   }
-  this.total = sum;
+  this.total = Math.round(sum * 100) / 100;
 });
 
 export default model('Order', orderSchema);
