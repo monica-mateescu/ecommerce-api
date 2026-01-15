@@ -9,10 +9,6 @@
       "development": "./src/db/index.ts",
       "default": "./dist/db/index.js"
     },
-    "#constructors": {
-      "development": "./src/constructors/index.ts",
-      "default": "./dist/constructors/index.js"
-    },
     "#models": {
       "development": "./src/models/index.ts",
       "default": "./dist/models/index.js"
