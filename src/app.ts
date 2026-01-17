@@ -3,6 +3,8 @@ import '#db';
 import { errorHandler } from '#middleware';
 import cors from 'cors';
 import { categoryRouter, userRouter, orderRouter, productRouter } from '#routers';
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger";
 
 const app = express();
 const port = process.env.PORT || 8080;
@@ -10,6 +12,8 @@ app.use(express.json());
 
 // To allow a front-end application to access APIs from a different origin during development
 app.use(cors());
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.get('/', (req, res) => res.send('eCommerce API is running!'));
 
