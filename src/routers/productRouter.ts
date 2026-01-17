@@ -53,6 +53,23 @@ const productRouter = Router();
 
 productRouter.get("/", getProducts);
 productRouter.get("/:id", validateObjectIdParam('id'), getProductById);
+
+/**
+ * @swagger
+ * /products:
+ *   post:
+ *     summary: Create a new product
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Product'
+ *     responses:
+ *       201:
+ *         description: Created product
+ */
+
 productRouter.post("/", validateBodyZod(productInputSchema), createProduct);
 productRouter.put("/:id", validateObjectIdParam('id'), validateBodyZod(productInputSchema), updateProduct);
 productRouter.delete("/:id", validateObjectIdParam('id'), deleteProduct);
