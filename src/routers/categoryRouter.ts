@@ -1,3 +1,16 @@
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     Category:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *         name:
+ *           type: string
+ */
+
 import { Router } from "express";
 import {
   getCategories,
@@ -10,6 +23,16 @@ import { categoryInputSchema } from "#schemas";
 import { validateBodyZod, validateObjectIdParam } from "#middleware";
 
 const categoryRouter = Router();
+
+/**
+ * @swagger
+ * /categories:
+ *   get:
+ *     summary: Get all categories
+ *     responses:
+ *       200:
+ *         description: List of categories
+ */
 
 categoryRouter.get("/", getCategories);
 categoryRouter.get("/:id", validateObjectIdParam('id'), getCategoryById);
